@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Gift, Heart, Sparkles, Star, Cake, PartyPopper } from "lucide-react";
+import MemoryGame from "@/components/memory-game";
 
 type Stage =
   | "landing"
@@ -15,6 +16,7 @@ type Stage =
   | "birthday-sequence"
   | "final-modal"
   | "gift-question"
+  | "memory-game"
   | "gift-response"
   | "final-message";
 
@@ -120,14 +122,29 @@ export default function BirthdaySurprise() {
 
   const handleGiftChoice = (choice: "yes" | "no") => {
     setGiftChoice(choice);
+    if (choice === "yes") {
+      setStage("memory-game");
+    } else {
+      setStage("gift-response");
+      setTimeout(() => {
+        setStage("final-message");
+      }, 3000);
+    }
+  };
+
+  const handleFinalContinue = () => {
+    setStage("final-message");
+  };
+
+  const handleMemoryGameComplete = () => {
     setStage("gift-response");
     setTimeout(() => {
       setStage("final-message");
     }, 3000);
   };
 
-  const handleFinalContinue = () => {
-    setStage("final-message");
+  const handleMemoryGameClose = () => {
+    setStage("gift-question");
   };
 
   // Enhanced floating elements with more variety
@@ -274,63 +291,68 @@ export default function BirthdaySurprise() {
   };
 
   return (
-    <div className="min-h-screen relative overflow-hidden">
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="min-h-screen relative overflow-hidden bg-gradient-to-br from-pink-100 via-purple-50 to-blue-100"
+    >
       <FloatingElements />
 
       {/* Confetti Explosion */}
-      {confettiTrigger && (
-        <div className="fixed inset-0 pointer-events-none z-20">
-          {[...Array(150)].map((_, i) => (
-            <motion.div
-              key={`confetti-${i}`}
-              className={`absolute w-2 h-2 ${
-                i % 5 === 0
-                  ? "bg-pink-400"
-                  : i % 5 === 1
-                  ? "bg-purple-400"
-                  : i % 5 === 2
-                  ? "bg-yellow-400"
-                  : i % 5 === 3
-                  ? "bg-blue-400"
-                  : "bg-green-400"
-              }`}
-              initial={{
-                x: (windowSize.width || 1000) / 2,
-                y: (windowSize.height || 1000) / 2,
-                scale: 0,
-                rotate: 0,
-              }}
-              animate={{
-                x:
-                  (windowSize.width || 1000) / 2 + (Math.random() - 0.5) * 1000,
-                y:
-                  (windowSize.height || 1000) / 2 + (Math.random() - 0.5) * 800,
-                scale: [0, 1, 0],
-                rotate: 360 * (Math.random() > 0.5 ? 1 : -1),
-              }}
-              transition={{
-                duration: 2.5,
-                ease: "easeOut",
-                delay: Math.random() * 0.8,
-              }}
-            />
-          ))}
-        </div>
-      )}
+      <AnimatePresence>
+        {confettiTrigger && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.8 }}
+            transition={{ duration: 0.7, ease: "easeOut" }}
+            className="fixed inset-0 pointer-events-none z-20"
+          >
+            {[...Array(150)].map((_, i) => (
+              <motion.div
+                key={`confetti-${i}`}
+                className={`absolute w-2 h-2 ${
+                  i % 5 === 0
+                    ? "bg-pink-400"
+                    : i % 5 === 1
+                    ? "bg-purple-400"
+                    : i % 5 === 2
+                    ? "bg-yellow-400"
+                    : i % 5 === 3
+                    ? "bg-blue-400"
+                    : "bg-green-400"
+                }`}
+                initial={{
+                  x: (windowSize.width || 1000) / 2,
+                  y: (windowSize.height || 1000) / 2,
+                  scale: 0,
+                  rotate: 0,
+                }}
+                animate={{
+                  x:
+                    (windowSize.width || 1000) / 2 +
+                    (Math.random() - 0.5) * 1000,
+                  y:
+                    (windowSize.height || 1000) / 2 +
+                    (Math.random() - 0.5) * 800,
+                  scale: [0, 1, 0],
+                  rotate: 360 * (Math.random() > 0.5 ? 1 : -1),
+                }}
+                transition={{
+                  duration: 2.5,
+                  ease: "easeOut",
+                  delay: Math.random() * 0.8,
+                }}
+              />
+            ))}
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Dynamic Background with Enhanced Gradient Animation */}
       <motion.div
-        className={`fixed inset-0 transition-all duration-2000 ${
-          stage === "landing"
-            ? "bg-gradient-to-br from-pink-100 via-purple-50 to-blue-100"
-            : stage === "name-input" ||
-              stage === "greeting" ||
-              stage === "surprise-modal"
-            ? "bg-gradient-to-br from-yellow-50 via-pink-50 to-purple-50"
-            : stage === "heart-clicking"
-            ? "bg-gradient-to-br from-rose-100 via-pink-100 to-purple-100"
-            : "bg-gradient-to-br from-purple-200 via-pink-200 to-yellow-200"
-        }`}
+        className="fixed inset-0 transition-all duration-2000 pointer-events-none"
         animate={{
           backgroundPosition: ["0% 0%", "100% 100%", "0% 0%"],
         }}
@@ -339,101 +361,115 @@ export default function BirthdaySurprise() {
           repeat: Infinity,
           ease: "linear",
         }}
+        style={{
+          background:
+            stage === "landing"
+              ? "linear-gradient(135deg, #fce7f3 0%, #ede9fe 50%, #dbeafe 100%)"
+              : stage === "name-input" ||
+                stage === "greeting" ||
+                stage === "surprise-modal"
+              ? "linear-gradient(135deg, #fef9c3 0%, #fce7f3 50%, #ede9fe 100%)"
+              : stage === "heart-clicking"
+              ? "linear-gradient(135deg, #ffe4e6 0%, #fce7f3 50%, #ede9fe 100%)"
+              : "linear-gradient(135deg, #ede9fe 0%, #fce7f3 50%, #fef9c3 100%)",
+        }}
       />
 
       {/* Landing Stage with Enhanced Gift Box Animation */}
-      {stage === "landing" && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="flex flex-col items-center justify-center min-h-screen p-8 relative z-10"
-          onClick={handleLandingClick}
-        >
-          <motion.h1
-            initial={{ y: -50, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ delay: 0.5 }}
-            className="text-2xl md:text-4xl font-bold text-center mb-12 text-purple-800 max-w-2xl"
-          >
-            I have a surprise for you. Click on the gift box to open it.
-          </motion.h1>
-
+      <AnimatePresence>
+        {stage === "landing" && (
           <motion.div
-            initial={{ scale: 0, rotate: -180 }}
-            animate={{
-              scale: 1,
-              rotate: 0,
-            }}
-            transition={{ delay: 1, type: "spring", stiffness: 200 }}
-            whileHover={{
-              scale: 1.1,
-              rotate: [0, -5, 5, -5, 0],
-              transition: { duration: 0.5 },
-            }}
-            className="cursor-pointer"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="flex flex-col items-center justify-center min-h-screen p-8 relative z-10"
+            onClick={handleLandingClick}
           >
-            <motion.div
-              animate={{
-                boxShadow: [
-                  "0 10px 30px rgba(0,0,0,0.2)",
-                  "0 20px 40px rgba(255,20,147,0.4)",
-                  "0 10px 30px rgba(0,0,0,0.2)",
-                ],
-              }}
-              transition={{
-                duration: 2,
-                repeat: Infinity,
-                ease: "easeInOut",
-              }}
-              className="bg-gradient-to-br from-pink-400 to-purple-500 p-8 rounded-3xl relative overflow-hidden"
+            <motion.h1
+              initial={{ y: -50, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: -50, opacity: 0 }}
+              transition={{ delay: 0.5, duration: 0.7, ease: "easeOut" }}
+              className="text-2xl md:text-4xl font-bold text-center mb-12 text-purple-800 max-w-2xl"
             >
-              {/* Gift box shine effect */}
-              <motion.div
-                className="absolute inset-0 bg-white opacity-0"
-                animate={{
-                  opacity: [0, 0.3, 0],
-                  left: ["-100%", "100%", "100%"],
-                }}
-                transition={{
-                  duration: 3,
-                  repeat: Infinity,
-                  delay: 1,
-                }}
-              />
-              <Gift className="w-24 h-24 text-white" />
-            </motion.div>
-          </motion.div>
+              I have a surprise for you. Click on the gift box to open it.
+            </motion.h1>
 
-          {/* Subtle floating hearts around gift */}
-          <div className="absolute top-1/2 left-1/2 w-full h-full pointer-events-none">
-            {[...Array(6)].map((_, i) => (
+            <motion.div
+              initial={{ scale: 0, rotate: -180 }}
+              animate={{ scale: 1, rotate: 0 }}
+              exit={{ scale: 0, rotate: -180 }}
+              transition={{ delay: 1, type: "spring", stiffness: 200 }}
+              whileHover={{
+                scale: 1.1,
+                rotate: [0, -5, 5, -5, 0],
+                transition: { duration: 0.5 },
+              }}
+              className="cursor-pointer"
+            >
               <motion.div
-                key={`landing-heart-${i}`}
-                className="absolute text-pink-400"
-                initial={{
-                  x: Math.random() * 200 - 100,
-                  y: Math.random() * 200 - 100,
-                  scale: 0.5,
-                  opacity: 0,
-                }}
                 animate={{
-                  y: [0, -50, 0],
-                  x: [0, Math.random() > 0.5 ? 30 : -30, 0],
-                  scale: [0.5, 0.8, 0.5],
-                  opacity: [0, 0.7, 0],
+                  boxShadow: [
+                    "0 10px 30px rgba(0,0,0,0.2)",
+                    "0 20px 40px rgba(255,20,147,0.4)",
+                    "0 10px 30px rgba(0,0,0,0.2)",
+                  ],
                 }}
                 transition={{
-                  duration: 4 + Math.random() * 3,
+                  duration: 2,
                   repeat: Infinity,
-                  delay: Math.random() * 2,
+                  ease: "easeInOut",
                 }}
+                className="bg-gradient-to-br from-pink-400 to-purple-500 p-8 rounded-3xl relative overflow-hidden"
               >
-                <Heart className="w-6 h-6 fill-current" />
+                {/* Gift box shine effect */}
+                <motion.div
+                  className="absolute inset-0 bg-white opacity-0"
+                  animate={{
+                    opacity: [0, 0.3, 0],
+                    left: ["-100%", "100%", "100%"],
+                  }}
+                  transition={{
+                    duration: 3,
+                    repeat: Infinity,
+                    delay: 1,
+                  }}
+                />
+                <Gift className="w-24 h-24 text-white" />
               </motion.div>
-            ))}
-          </div>
-        </motion.div>
-      )}
+            </motion.div>
+
+            {/* Subtle floating hearts around gift */}
+            <div className="absolute top-1/2 left-1/2 w-full h-full pointer-events-none">
+              {[...Array(6)].map((_, i) => (
+                <motion.div
+                  key={`landing-heart-${i}`}
+                  className="absolute text-pink-400"
+                  initial={{
+                    x: Math.random() * 200 - 100,
+                    y: Math.random() * 200 - 100,
+                    scale: 0.5,
+                    opacity: 0,
+                  }}
+                  animate={{
+                    y: [0, -50, 0],
+                    x: [0, Math.random() > 0.5 ? 30 : -30, 0],
+                    scale: [0.5, 0.8, 0.5],
+                    opacity: [0, 0.7, 0],
+                  }}
+                  transition={{
+                    duration: 4 + Math.random() * 3,
+                    repeat: Infinity,
+                    delay: Math.random() * 2,
+                  }}
+                >
+                  <Heart className="w-6 h-6 fill-current" />
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Name Input Modal */}
       <AnimatePresence>
@@ -916,6 +952,17 @@ export default function BirthdaySurprise() {
         )}
       </AnimatePresence>
 
+      {/* Memory Game */}
+      <AnimatePresence>
+        {stage === "memory-game" && (
+          <MemoryGame
+            onComplete={handleMemoryGameComplete}
+            onClose={handleMemoryGameClose}
+            userName={userName}
+          />
+        )}
+      </AnimatePresence>
+
       {/* Gift Response - Auto disappears */}
       <AnimatePresence>
         {stage === "gift-response" && (
@@ -943,10 +990,13 @@ export default function BirthdaySurprise() {
                 </>
               ) : (
                 <>
-                  <div className="text-6xl mb-4">😼</div>
-                  <h2 className="text-2xl font-bold text-purple-800">
-                    Pehle party de 😼
+                  <div className="text-6xl mb-4">🎉</div>
+                  <h2 className="text-2xl font-bold text-purple-800 mb-4">
+                    Amazing! You won the memory game! 🎊
                   </h2>
+                  <p className="text-lg text-purple-600">
+                    Here's your well-deserved gift! 🎁
+                  </p>
                 </>
               )}
             </motion.div>
@@ -993,6 +1043,6 @@ export default function BirthdaySurprise() {
           </motion.div>
         )}
       </AnimatePresence>
-    </div>
+    </motion.div>
   );
 }
