@@ -82,7 +82,7 @@ export default function BirthdaySurprise() {
 
   const handleGreetingContinue = () => {
     setStage("surprise-modal");
-    setShowHearts(true); // Start showing hearts in background
+    setShowHearts(true);
   };
 
   const handleSurpriseContinue = () => {
@@ -147,7 +147,6 @@ export default function BirthdaySurprise() {
     setStage("gift-question");
   };
 
-  // Enhanced floating elements with more variety
   const FloatingElements = () => {
     const elements = [
       { icon: Heart, color: "text-pink-400", size: 4 },
@@ -198,7 +197,6 @@ export default function BirthdaySurprise() {
           );
         })}
 
-        {/* Special floating hearts - larger and more prominent */}
         {showHearts &&
           [...Array(12)].map((_, i) => (
             <motion.div
