@@ -3,13 +3,13 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Gift, Heart, Sparkles, Star, Cake, PartyPopper } from "lucide-react";
 import MemoryGame from "@/components/memory-game";
 
+const USER_NAME = "Moona";
+
 type Stage =
   | "landing"
-  | "name-input"
   | "greeting"
   | "surprise-modal"
   | "heart-clicking"
@@ -22,8 +22,6 @@ type Stage =
 
 export default function BirthdaySurprise() {
   const [stage, setStage] = useState<Stage>("landing");
-  const [userName, setUserName] = useState("");
-  const [nameInput, setNameInput] = useState("");
   const [clickedHearts, setClickedHearts] = useState<number[]>([]);
   const [currentText, setCurrentText] = useState("");
   const [showContinueButton, setShowContinueButton] = useState(false);
@@ -45,7 +43,7 @@ export default function BirthdaySurprise() {
   const typewriterTexts = [
     "Wait…",
     "Someone has a birthday!",
-    `Happy Birthday, ${userName}!`,
+    `Happy Birthday, ${USER_NAME}!`,
     "You're getting older 🥹",
   ];
 
@@ -60,24 +58,17 @@ export default function BirthdaySurprise() {
       if (i > text.length) {
         clearInterval(timer);
         if (callback) {
-          setTimeout(callback, 800);
+          setTimeout(callback, 1000);
         }
       }
-    }, 20);
+    }, 35);
   };
 
   const handleLandingClick = () => {
-    setStage("name-input");
-  };
-
-  const handleNameSubmit = () => {
-    if (nameInput.trim()) {
-      setUserName(nameInput.trim());
-      setStage("greeting");
-      setTimeout(() => {
-        setShowGreetingButton(true);
-      }, 2000);
-    }
+    setStage("greeting");
+    setTimeout(() => {
+      setShowGreetingButton(true);
+    }, 2000);
   };
 
   const handleGreetingContinue = () => {
@@ -132,10 +123,6 @@ export default function BirthdaySurprise() {
     }
   };
 
-  const handleFinalContinue = () => {
-    setStage("final-message");
-  };
-
   const handleMemoryGameComplete = () => {
     setStage("gift-response");
     setTimeout(() => {
@@ -156,10 +143,16 @@ export default function BirthdaySurprise() {
       { icon: PartyPopper, color: "text-blue-400", size: 4 },
     ];
 
+    const isMobile = windowSize.width < 640;
+    const floatCount = isMobile ? 15 : 40;
+    const heartCount = isMobile ? 6 : 12;
+    const starCount = isMobile ? 8 : 15;
+    const numberCount = isMobile ? 10 : 20;
+
     return (
       <div className="fixed inset-0 pointer-events-none z-0">
         {/* Regular floating elements */}
-        {[...Array(40)].map((_, i) => {
+        {[...Array(floatCount)].map((_, i) => {
           const element = elements[i % elements.length];
           return (
             <motion.div
@@ -198,7 +191,7 @@ export default function BirthdaySurprise() {
         })}
 
         {showHearts &&
-          [...Array(12)].map((_, i) => (
+          [...Array(heartCount)].map((_, i) => (
             <motion.div
               key={`heart-special-${i}`}
               className="absolute text-pink-500"
@@ -230,7 +223,7 @@ export default function BirthdaySurprise() {
           ))}
 
         {/* Pulsing stars */}
-        {[...Array(15)].map((_, i) => (
+        {[...Array(starCount)].map((_, i) => (
           <motion.div
             key={`star-pulse-${i}`}
             className="absolute text-yellow-300"
@@ -256,7 +249,7 @@ export default function BirthdaySurprise() {
 
         {/* Floating numbers for heart count */}
         {showHearts &&
-          [...Array(20)].map((_, i) => (
+          [...Array(numberCount)].map((_, i) => (
             <motion.div
               key={`number-${i}`}
               className="absolute text-2xl font-bold text-pink-600"
@@ -293,7 +286,7 @@ export default function BirthdaySurprise() {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="min-h-screen relative overflow-hidden bg-gradient-to-br from-pink-100 via-purple-50 to-blue-100"
+      className="min-h-dvh relative overflow-hidden bg-gradient-to-br from-pink-100 via-purple-50 to-blue-100"
     >
       <FloatingElements />
 
@@ -307,19 +300,19 @@ export default function BirthdaySurprise() {
             transition={{ duration: 0.7, ease: "easeOut" }}
             className="fixed inset-0 pointer-events-none z-20"
           >
-            {[...Array(150)].map((_, i) => (
+            {[...Array(windowSize.width < 640 ? 60 : 150)].map((_, i) => (
               <motion.div
                 key={`confetti-${i}`}
                 className={`absolute w-2 h-2 ${
                   i % 5 === 0
                     ? "bg-pink-400"
                     : i % 5 === 1
-                    ? "bg-purple-400"
-                    : i % 5 === 2
-                    ? "bg-yellow-400"
-                    : i % 5 === 3
-                    ? "bg-blue-400"
-                    : "bg-green-400"
+                      ? "bg-purple-400"
+                      : i % 5 === 2
+                        ? "bg-yellow-400"
+                        : i % 5 === 3
+                          ? "bg-blue-400"
+                          : "bg-green-400"
                 }`}
                 initial={{
                   x: (windowSize.width || 1000) / 2,
@@ -363,32 +356,35 @@ export default function BirthdaySurprise() {
           background:
             stage === "landing"
               ? "linear-gradient(135deg, #fce7f3 0%, #ede9fe 50%, #dbeafe 100%)"
-              : stage === "name-input" ||
-                stage === "greeting" ||
-                stage === "surprise-modal"
-              ? "linear-gradient(135deg, #fef9c3 0%, #fce7f3 50%, #ede9fe 100%)"
-              : stage === "heart-clicking"
-              ? "linear-gradient(135deg, #ffe4e6 0%, #fce7f3 50%, #ede9fe 100%)"
-              : "linear-gradient(135deg, #ede9fe 0%, #fce7f3 50%, #fef9c3 100%)",
+              : stage === "greeting" || stage === "surprise-modal"
+                ? "linear-gradient(135deg, #fef9c3 0%, #fce7f3 50%, #ede9fe 100%)"
+                : stage === "heart-clicking"
+                  ? "linear-gradient(135deg, #ffe4e6 0%, #fce7f3 50%, #ede9fe 100%)"
+                  : "linear-gradient(135deg, #ede9fe 0%, #fce7f3 50%, #fef9c3 100%)",
         }}
       />
 
       {/* Landing Stage with Enhanced Gift Box Animation */}
-      <AnimatePresence>
+      <AnimatePresence mode="wait">
         {stage === "landing" && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="flex flex-col items-center justify-center min-h-screen p-8 relative z-10"
+            exit={{ opacity: 0, scale: 0.95, filter: "blur(8px)" }}
+            transition={{ duration: 0.6, ease: [0.4, 0, 0.2, 1] }}
+            className="flex flex-col items-center justify-center min-h-dvh p-4 sm:p-8 relative z-10"
             onClick={handleLandingClick}
           >
             <motion.h1
-              initial={{ y: -50, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              exit={{ y: -50, opacity: 0 }}
-              transition={{ delay: 0.5, duration: 0.7, ease: "easeOut" }}
-              className="text-2xl md:text-4xl font-bold text-center mb-12 text-purple-800 max-w-2xl"
+              initial={{ y: -40, opacity: 0, filter: "blur(10px)" }}
+              animate={{ y: 0, opacity: 1, filter: "blur(0px)" }}
+              exit={{ y: -30, opacity: 0, filter: "blur(10px)" }}
+              transition={{
+                delay: 0.3,
+                duration: 0.8,
+                ease: [0.25, 0.46, 0.45, 0.94],
+              }}
+              className="text-xl sm:text-2xl md:text-4xl font-bold text-center mb-8 sm:mb-12 text-purple-800 max-w-2xl px-2"
             >
               I have a surprise for you. Click on the gift box to open it.
             </motion.h1>
@@ -396,13 +392,19 @@ export default function BirthdaySurprise() {
             <motion.div
               initial={{ scale: 0, rotate: -180 }}
               animate={{ scale: 1, rotate: 0 }}
-              exit={{ scale: 0, rotate: -180 }}
-              transition={{ delay: 1, type: "spring", stiffness: 200 }}
+              exit={{ scale: 0, rotate: 180, opacity: 0 }}
+              transition={{
+                delay: 0.7,
+                type: "spring",
+                stiffness: 180,
+                damping: 15,
+              }}
               whileHover={{
                 scale: 1.1,
                 rotate: [0, -5, 5, -5, 0],
                 transition: { duration: 0.5 },
               }}
+              whileTap={{ scale: 0.95 }}
               className="cursor-pointer"
             >
               <motion.div
@@ -418,7 +420,7 @@ export default function BirthdaySurprise() {
                   repeat: Infinity,
                   ease: "easeInOut",
                 }}
-                className="bg-gradient-to-br from-pink-400 to-purple-500 p-8 rounded-3xl relative overflow-hidden"
+                className="bg-gradient-to-br from-pink-400 to-purple-500 p-6 sm:p-8 rounded-3xl relative overflow-hidden"
               >
                 {/* Gift box shine effect */}
                 <motion.div
@@ -433,7 +435,7 @@ export default function BirthdaySurprise() {
                     delay: 1,
                   }}
                 />
-                <Gift className="w-24 h-24 text-white" />
+                <Gift className="w-16 h-16 sm:w-24 sm:h-24 text-white" />
               </motion.div>
             </motion.div>
 
@@ -469,122 +471,55 @@ export default function BirthdaySurprise() {
         )}
       </AnimatePresence>
 
-      {/* Name Input Modal */}
-      <AnimatePresence>
-        {stage === "name-input" && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50"
-          >
-            <motion.div
-              initial={{ scale: 0.8, opacity: 0, y: 50 }}
-              animate={{ scale: 1, opacity: 1, y: 0 }}
-              exit={{ scale: 0.8, opacity: 0, y: 50 }}
-              transition={{ type: "spring", stiffness: 300, damping: 30 }}
-              className="bg-white rounded-3xl p-8 max-w-md w-full shadow-2xl relative overflow-hidden"
-            >
-              {/* Animated background elements */}
-              <motion.div
-                className="absolute -top-20 -left-20 w-40 h-40 bg-pink-100 rounded-full opacity-20"
-                animate={{
-                  scale: [1, 1.5, 1],
-                  x: [0, 50, 0],
-                  y: [0, 50, 0],
-                }}
-                transition={{
-                  duration: 8,
-                  repeat: Infinity,
-                }}
-              />
-              <motion.div
-                className="absolute -bottom-20 -right-20 w-40 h-40 bg-purple-100 rounded-full opacity-20"
-                animate={{
-                  scale: [1, 1.5, 1],
-                  x: [0, -50, 0],
-                  y: [0, -50, 0],
-                }}
-                transition={{
-                  duration: 8,
-                  repeat: Infinity,
-                  delay: 4,
-                }}
-              />
-
-              <div className="text-center mb-6 relative z-10">
-                <motion.div
-                  className="text-6xl mb-4"
-                  animate={{ rotate: [0, 10, -10, 0] }}
-                  transition={{ duration: 2, repeat: Infinity }}
-                >
-                  🎁
-                </motion.div>
-                <h2 className="text-2xl font-bold text-purple-800 mb-2">
-                  What's your name?
-                </h2>
-              </div>
-
-              <div className="space-y-4 relative z-10">
-                <Input
-                  value={nameInput}
-                  onChange={(e: any) => setNameInput(e.target.value)}
-                  placeholder="Enter your name..."
-                  className="text-center text-lg py-3 rounded-2xl border-2 border-pink-200 focus:border-purple-400 shadow-sm"
-                  onKeyPress={(e: any) =>
-                    e.key === "Enter" && handleNameSubmit()
-                  }
-                />
-                <Button
-                  onClick={handleNameSubmit}
-                  className="w-full py-3 text-lg rounded-2xl bg-gradient-to-r from-pink-400 to-purple-500 hover:from-pink-500 hover:to-purple-600 shadow-lg transform transition-all hover:scale-105"
-                  disabled={!nameInput.trim()}
-                >
-                  Continue
-                </Button>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
       {/* Greeting Stage */}
       {stage === "greeting" && (
         <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="flex flex-col items-center justify-center min-h-screen p-8 relative z-10"
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, ease: [0.25, 0.46, 0.45, 0.94] }}
+          className="flex flex-col items-center justify-center min-h-dvh p-4 sm:p-8 relative z-10"
         >
           <motion.div
-            initial={{ scale: 1.2 }}
-            animate={{ scale: 1 }}
-            transition={{ duration: 1 }}
-            className="text-center mb-8"
+            initial={{ scale: 1.15, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ duration: 1.2, ease: [0.25, 0.46, 0.45, 0.94] }}
+            className="text-center mb-6 sm:mb-8"
           >
             <motion.div
-              initial={{ y: -50, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: 0.5 }}
-              className="text-8xl mb-6"
-              whileHover={{ scale: 1.2, rotate: [0, 10, -10, 0] }}
+              initial={{ y: -40, opacity: 0, scale: 0.5 }}
+              animate={{ y: 0, opacity: 1, scale: 1 }}
+              transition={{
+                delay: 0.3,
+                duration: 0.8,
+                ease: [0.34, 1.56, 0.64, 1],
+              }}
+              className="text-6xl sm:text-8xl mb-4 sm:mb-6"
             >
               😸
             </motion.div>
 
             <motion.h1
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 1 }}
-              className="text-4xl font-bold text-purple-800 mb-8"
+              initial={{ opacity: 0, y: 20, filter: "blur(8px)" }}
+              animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+              transition={{
+                delay: 0.8,
+                duration: 0.7,
+                ease: [0.25, 0.46, 0.45, 0.94],
+              }}
+              className="text-3xl sm:text-4xl font-bold text-purple-800 mb-4 sm:mb-8"
             >
-              Hi, {userName}!
+              Hi, {USER_NAME}!
             </motion.h1>
 
             <motion.p
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 1.5 }}
-              className="text-2xl text-purple-700 mb-8"
+              initial={{ opacity: 0, y: 15, filter: "blur(6px)" }}
+              animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+              transition={{
+                delay: 1.3,
+                duration: 0.7,
+                ease: [0.25, 0.46, 0.45, 0.94],
+              }}
+              className="text-xl sm:text-2xl text-purple-700 mb-4 sm:mb-8"
             >
               I have something for you.
             </motion.p>
@@ -593,13 +528,13 @@ export default function BirthdaySurprise() {
           <AnimatePresence>
             {showGreetingButton && (
               <motion.div
-                initial={{ y: 50, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                transition={{ duration: 0.5, type: "spring" }}
+                initial={{ y: 30, opacity: 0, scale: 0.9 }}
+                animate={{ y: 0, opacity: 1, scale: 1 }}
+                transition={{ duration: 0.6, ease: [0.34, 1.56, 0.64, 1] }}
               >
                 <Button
                   onClick={handleGreetingContinue}
-                  className="px-8 py-4 text-xl rounded-2xl bg-gradient-to-r from-pink-400 to-purple-500 hover:from-pink-500 hover:to-purple-600 shadow-lg transform transition-all hover:scale-105"
+                  className="px-6 sm:px-8 py-3 sm:py-4 text-lg sm:text-xl rounded-2xl bg-gradient-to-r from-pink-400 to-purple-500 hover:from-pink-500 hover:to-purple-600 shadow-lg transform transition-all active:scale-95 hover:scale-105"
                 >
                   Click to Continue
                   <Sparkles className="ml-2 w-5 h-5" />
@@ -611,13 +546,14 @@ export default function BirthdaySurprise() {
       )}
 
       {/* Surprise Modal with Enhanced Emoji Animations */}
-      <AnimatePresence>
+      <AnimatePresence mode="wait">
         {stage === "surprise-modal" && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50"
+            transition={{ duration: 0.4, ease: "easeInOut" }}
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50"
           >
             {/* Enhanced Floating Emoji Animations */}
             <div className="fixed inset-0 pointer-events-none">
@@ -651,16 +587,16 @@ export default function BirthdaySurprise() {
                   >
                     {emoji}
                   </motion.div>
-                )
+                ),
               )}
             </div>
 
             <motion.div
-              initial={{ scale: 0.8, opacity: 0, rotateY: 90 }}
-              animate={{ scale: 1, opacity: 1, rotateY: 0 }}
-              exit={{ scale: 0.8, opacity: 0, rotateY: -90 }}
-              transition={{ type: "spring", stiffness: 200 }}
-              className="bg-white rounded-3xl p-8 max-w-md w-full shadow-2xl text-center relative z-10 overflow-hidden"
+              initial={{ scale: 0.85, opacity: 0, y: 30 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.9, opacity: 0, y: -20 }}
+              transition={{ type: "spring", stiffness: 180, damping: 20 }}
+              className="bg-white rounded-3xl p-5 sm:p-8 max-w-md w-full shadow-2xl text-center relative z-10 overflow-hidden"
             >
               {/* Background animation */}
               <motion.div
@@ -711,29 +647,36 @@ export default function BirthdaySurprise() {
       {/* Heart Clicking Stage */}
       {stage === "heart-clicking" && (
         <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="flex flex-col items-center justify-center min-h-screen p-8 relative z-10"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, ease: [0.25, 0.46, 0.45, 0.94] }}
+          className="flex flex-col items-center justify-center min-h-dvh p-4 sm:p-8 relative z-10"
         >
           <motion.h1
-            initial={{ scale: 0.8 }}
-            animate={{ scale: 1 }}
-            className="text-3xl font-bold text-purple-800 mb-12 text-center"
+            initial={{ scale: 0.8, opacity: 0, filter: "blur(6px)" }}
+            animate={{ scale: 1, opacity: 1, filter: "blur(0px)" }}
+            transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
+            className="text-2xl sm:text-3xl font-bold text-purple-800 mb-8 sm:mb-12 text-center"
           >
             Click the 4 hearts.
           </motion.h1>
 
-          <div className="grid grid-cols-2 gap-8">
+          <div className="grid grid-cols-2 gap-5 sm:gap-8">
             {[0, 1, 2, 3].map((heartIndex) => (
               <motion.div
                 key={heartIndex}
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                transition={{ delay: heartIndex * 0.2 }}
-                whileHover={{ scale: 1.1, rotate: [0, 5, -5, 0] }}
-                whileTap={{ scale: 0.9 }}
+                initial={{ scale: 0, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{
+                  delay: 0.2 + heartIndex * 0.15,
+                  type: "spring",
+                  stiffness: 200,
+                  damping: 15,
+                }}
+                whileHover={{ scale: 1.08 }}
+                whileTap={{ scale: 0.92 }}
                 onClick={() => handleHeartClick(heartIndex)}
-                className={`cursor-pointer p-4 rounded-full transition-all duration-300 ${
+                className={`cursor-pointer p-3 sm:p-4 rounded-full transition-all duration-300 ${
                   clickedHearts.includes(heartIndex)
                     ? "bg-pink-200 shadow-inner"
                     : "bg-white shadow-lg hover:shadow-xl"
@@ -751,7 +694,7 @@ export default function BirthdaySurprise() {
                   transition={{ duration: 0.6, ease: "easeInOut" }}
                 >
                   <Heart
-                    className={`w-16 h-16 transition-all duration-300 ${
+                    className={`w-12 h-12 sm:w-16 sm:h-16 transition-all duration-300 ${
                       clickedHearts.includes(heartIndex)
                         ? "text-pink-600 fill-current"
                         : "text-pink-400"
@@ -779,39 +722,41 @@ export default function BirthdaySurprise() {
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          className="flex flex-col items-center justify-center min-h-screen p-8 relative z-10"
+          transition={{ duration: 0.8, ease: [0.25, 0.46, 0.45, 0.94] }}
+          className="flex flex-col items-center justify-center min-h-dvh p-4 sm:p-8 relative z-10"
         >
-          <div className="text-center mb-8">
+          <div className="text-center mb-6 sm:mb-8">
             <motion.div
               key={textIndex}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="text-4xl md:text-6xl font-bold text-purple-800 mb-8 min-h-[80px]"
+              initial={{ opacity: 0, y: 15, filter: "blur(6px)" }}
+              animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+              transition={{ duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }}
+              className="text-2xl sm:text-4xl md:text-6xl font-bold text-purple-800 mb-6 sm:mb-8 min-h-[60px] sm:min-h-[80px] px-2"
             >
               {currentText}
             </motion.div>
 
             <motion.div
-              className="flex justify-center space-x-4 mb-8"
+              className="flex justify-center space-x-3 sm:space-x-4 mb-6 sm:mb-8"
               animate={{ y: [0, -10, 0] }}
               transition={{ duration: 2, repeat: Infinity }}
             >
               <motion.div
-                className="text-6xl"
+                className="text-4xl sm:text-6xl"
                 animate={{ rotate: [0, 10, -10, 0] }}
                 transition={{ duration: 2, repeat: Infinity }}
               >
                 🐱
               </motion.div>
               <motion.div
-                className="text-6xl"
+                className="text-4xl sm:text-6xl"
                 animate={{ scale: [1, 1.2, 1] }}
                 transition={{ duration: 2, repeat: Infinity }}
               >
                 🎂
               </motion.div>
               <motion.div
-                className="text-6xl"
+                className="text-4xl sm:text-6xl"
                 animate={{ rotate: [0, -10, 10, 0] }}
                 transition={{ duration: 2, repeat: Infinity }}
               >
@@ -822,13 +767,13 @@ export default function BirthdaySurprise() {
 
           {showContinueButton && (
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ type: "spring", stiffness: 200 }}
+              initial={{ opacity: 0, y: 20, scale: 0.9 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              transition={{ duration: 0.6, ease: [0.34, 1.56, 0.64, 1] }}
             >
               <Button
                 onClick={handleBirthdayContinue}
-                className="px-8 py-4 text-xl rounded-2xl bg-gradient-to-r from-pink-400 to-purple-500 hover:from-pink-500 hover:to-purple-600 shadow-lg transform transition-all hover:scale-105"
+                className="px-6 sm:px-8 py-3 sm:py-4 text-lg sm:text-xl rounded-2xl bg-gradient-to-r from-pink-400 to-purple-500 hover:from-pink-500 hover:to-purple-600 shadow-lg transform transition-all active:scale-95 hover:scale-105"
               >
                 Continue
                 <Sparkles className="ml-2 w-5 h-5" />
@@ -839,19 +784,21 @@ export default function BirthdaySurprise() {
       )}
 
       {/* Final Modal */}
-      <AnimatePresence>
+      <AnimatePresence mode="wait">
         {stage === "final-modal" && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50"
+            transition={{ duration: 0.4, ease: "easeInOut" }}
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50"
           >
             <motion.div
-              initial={{ scale: 0.8, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.8, opacity: 0 }}
-              className="bg-white rounded-3xl p-8 max-w-lg w-full shadow-2xl text-center relative overflow-hidden"
+              initial={{ scale: 0.85, opacity: 0, y: 30 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.9, opacity: 0, y: -15 }}
+              transition={{ duration: 0.5, ease: [0.34, 1.56, 0.64, 1] }}
+              className="bg-white rounded-3xl p-5 sm:p-8 max-w-lg w-full shadow-2xl text-center relative overflow-hidden"
             >
               {/* Background animation */}
               <motion.div
@@ -866,14 +813,14 @@ export default function BirthdaySurprise() {
                 }}
               />
 
-              <div className="flex justify-center space-x-2 mb-6 relative z-10">
-                <Heart className="w-8 h-8 text-pink-400 fill-current" />
-                <div className="text-4xl">😻</div>
-                <Heart className="w-8 h-8 text-pink-400 fill-current" />
+              <div className="flex justify-center space-x-2 mb-4 sm:mb-6 relative z-10">
+                <Heart className="w-6 h-6 sm:w-8 sm:h-8 text-pink-400 fill-current" />
+                <div className="text-3xl sm:text-4xl">😻</div>
+                <Heart className="w-6 h-6 sm:w-8 sm:h-8 text-pink-400 fill-current" />
               </div>
 
-              <div className="bg-gradient-to-r from-pink-100 to-purple-100 rounded-2xl p-6 mb-6 relative z-10 border border-pink-200 shadow-sm">
-                <p className="text-lg text-purple-800 leading-relaxed">
+              <div className="bg-gradient-to-r from-pink-100 to-purple-100 rounded-2xl p-4 sm:p-6 mb-4 sm:mb-6 relative z-10 border border-pink-200 shadow-sm">
+                <p className="text-base sm:text-lg text-purple-800 leading-relaxed">
                   You bring so much joy and happiness to everyone around you.
                   Your special day deserves to be celebrated with all the love
                   in the world! 🌟
@@ -893,19 +840,21 @@ export default function BirthdaySurprise() {
       </AnimatePresence>
 
       {/* Gift Question Modal */}
-      <AnimatePresence>
+      <AnimatePresence mode="wait">
         {stage === "gift-question" && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50"
+            transition={{ duration: 0.4, ease: "easeInOut" }}
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50"
           >
             <motion.div
-              initial={{ scale: 0.8, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.8, opacity: 0 }}
-              className="bg-white rounded-3xl p-8 max-w-md w-full shadow-2xl text-center relative overflow-hidden"
+              initial={{ scale: 0.85, opacity: 0, y: 30 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.9, opacity: 0, y: -15 }}
+              transition={{ duration: 0.5, ease: [0.34, 1.56, 0.64, 1] }}
+              className="bg-white rounded-3xl p-5 sm:p-8 max-w-md w-full shadow-2xl text-center relative overflow-hidden"
             >
               {/* Background animation */}
               <motion.div
@@ -920,27 +869,27 @@ export default function BirthdaySurprise() {
                 }}
               />
 
-              <div className="flex justify-center space-x-2 mb-6 relative z-10">
-                <Heart className="w-6 h-6 text-pink-400 fill-current" />
-                <div className="text-4xl">😸</div>
-                <Heart className="w-6 h-6 text-pink-400 fill-current" />
+              <div className="flex justify-center space-x-2 mb-4 sm:mb-6 relative z-10">
+                <Heart className="w-5 h-5 sm:w-6 sm:h-6 text-pink-400 fill-current" />
+                <div className="text-3xl sm:text-4xl">😸</div>
+                <Heart className="w-5 h-5 sm:w-6 sm:h-6 text-pink-400 fill-current" />
               </div>
 
-              <h2 className="text-2xl font-bold text-purple-800 mb-6 relative z-10">
-                {userName}, do you want a gift?
+              <h2 className="text-xl sm:text-2xl font-bold text-purple-800 mb-4 sm:mb-6 relative z-10">
+                {USER_NAME}, do you want a gift?
               </h2>
 
-              <div className="flex space-x-4 relative z-10">
+              <div className="flex space-x-3 sm:space-x-4 relative z-10">
                 <Button
                   onClick={() => handleGiftChoice("yes")}
-                  className="flex-1 py-3 text-lg rounded-2xl bg-gradient-to-r from-green-400 to-blue-500 hover:from-green-500 hover:to-blue-600 shadow-lg transform transition-all hover:scale-105"
+                  className="flex-1 py-3 text-base sm:text-lg rounded-2xl bg-gradient-to-r from-green-400 to-blue-500 hover:from-green-500 hover:to-blue-600 shadow-lg transform transition-all active:scale-95 hover:scale-105"
                 >
                   Yes! 🎁
                 </Button>
                 <Button
                   onClick={() => handleGiftChoice("no")}
                   variant="outline"
-                  className="flex-1 py-3 text-lg rounded-2xl border-2 border-pink-300 text-pink-600 hover:bg-pink-50 shadow-sm transform transition-all hover:scale-105"
+                  className="flex-1 py-3 text-base sm:text-lg rounded-2xl border-2 border-pink-300 text-pink-600 hover:bg-pink-50 shadow-sm transform transition-all active:scale-95 hover:scale-105"
                 >
                   No thanks
                 </Button>
@@ -956,43 +905,45 @@ export default function BirthdaySurprise() {
           <MemoryGame
             onComplete={handleMemoryGameComplete}
             onClose={handleMemoryGameClose}
-            userName={userName}
+            userName={USER_NAME}
           />
         )}
       </AnimatePresence>
 
       {/* Gift Response - Auto disappears */}
-      <AnimatePresence>
+      <AnimatePresence mode="wait">
         {stage === "gift-response" && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50"
+            transition={{ duration: 0.4, ease: "easeInOut" }}
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50"
           >
             <motion.div
-              initial={{ scale: 0.8, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.8, opacity: 0 }}
-              className="bg-white rounded-3xl p-8 max-w-md w-full shadow-2xl text-center"
+              initial={{ scale: 0.85, opacity: 0, y: 25 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.9, opacity: 0, y: -15 }}
+              transition={{ duration: 0.5, ease: [0.34, 1.56, 0.64, 1] }}
+              className="bg-white rounded-3xl p-5 sm:p-8 max-w-md w-full shadow-2xl text-center"
             >
               {giftChoice === "no" ? (
                 <>
-                  <div className="text-6xl mb-4">😹</div>
-                  <h2 className="text-2xl font-bold text-purple-800 mb-4">
+                  <div className="text-5xl sm:text-6xl mb-3 sm:mb-4">😹</div>
+                  <h2 className="text-xl sm:text-2xl font-bold text-purple-800 mb-3 sm:mb-4">
                     Too bad! You're getting one anyway! 🎉
                   </h2>
-                  <p className="text-lg text-purple-600">
+                  <p className="text-base sm:text-lg text-purple-600">
                     You can't escape birthday surprises! 😸
                   </p>
                 </>
               ) : (
                 <>
-                  <div className="text-6xl mb-4">🎉</div>
-                  <h2 className="text-2xl font-bold text-purple-800 mb-4">
+                  <div className="text-5xl sm:text-6xl mb-3 sm:mb-4">🎉</div>
+                  <h2 className="text-xl sm:text-2xl font-bold text-purple-800 mb-3 sm:mb-4">
                     Amazing! You won the memory game! 🎊
                   </h2>
-                  <p className="text-lg text-purple-600">
+                  <p className="text-base sm:text-lg text-purple-600">
                     Here's your well-deserved gift! 🎁
                   </p>
                 </>
@@ -1003,40 +954,121 @@ export default function BirthdaySurprise() {
       </AnimatePresence>
 
       {/* Final Message */}
-      <AnimatePresence>
+      <AnimatePresence mode="wait">
         {stage === "final-message" && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50"
+            transition={{ duration: 0.5, ease: "easeInOut" }}
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50"
           >
             <motion.div
-              initial={{ scale: 0.8, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.8, opacity: 0 }}
-              className="bg-white rounded-3xl p-8 max-w-lg w-full shadow-2xl text-center"
+              initial={{ scale: 0.85, opacity: 0, y: 30 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              transition={{ duration: 0.6, ease: [0.34, 1.56, 0.64, 1] }}
+              className="bg-white rounded-3xl p-5 sm:p-8 max-w-lg w-full shadow-2xl text-center"
             >
-              <div className="text-6xl mb-6">🎊</div>
+              <motion.div
+                initial={{ scale: 0, rotate: -20 }}
+                animate={{ scale: 1, rotate: 0 }}
+                transition={{
+                  delay: 0.2,
+                  duration: 0.6,
+                  ease: [0.34, 1.56, 0.64, 1],
+                }}
+                className="text-5xl sm:text-6xl mb-4 sm:mb-6"
+              >
+                🎊
+              </motion.div>
 
-              <div className="bg-gradient-to-r from-pink-100 to-purple-100 rounded-2xl p-6 mb-6">
-                <h2 className="text-2xl font-bold text-purple-800 mb-4">
-                  Happy Birthday, {userName}! 🎂
+              <motion.div
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{
+                  delay: 0.4,
+                  duration: 0.6,
+                  ease: [0.25, 0.46, 0.45, 0.94],
+                }}
+                className="bg-gradient-to-r from-pink-100 to-purple-100 rounded-2xl p-4 sm:p-6 mb-4 sm:mb-6"
+              >
+                <h2 className="text-xl sm:text-2xl font-bold text-purple-800 mb-3 sm:mb-4">
+                  Happy Birthday, {USER_NAME}! 🎂
                 </h2>
-                <p className="text-lg text-purple-700 leading-relaxed">
+                <p className="text-base sm:text-lg text-purple-700 leading-relaxed">
                   May your special day be filled with happiness, laughter, and
                   all your favorite things. You deserve all the joy in the
-                  world! Here's to another amazing year ahead! ✨🎈
+                  world! Here&apos;s to another amazing year ahead! ✨🎈
                 </p>
-              </div>
+              </motion.div>
 
-              <div className="flex justify-center space-x-2">
-                <div className="text-3xl">🐱</div>
-                <div className="text-3xl">💖</div>
-                <div className="text-3xl">🎂</div>
-                <div className="text-3xl">💖</div>
-                <div className="text-3xl">🐱</div>
-              </div>
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.7, duration: 0.5 }}
+                className="flex justify-center space-x-2 mb-5 sm:mb-6"
+              >
+                <motion.div
+                  animate={{ y: [0, -5, 0] }}
+                  transition={{ duration: 2, repeat: Infinity, delay: 0 }}
+                  className="text-2xl sm:text-3xl"
+                >
+                  🐱
+                </motion.div>
+                <motion.div
+                  animate={{ scale: [1, 1.2, 1] }}
+                  transition={{ duration: 2, repeat: Infinity, delay: 0.2 }}
+                  className="text-2xl sm:text-3xl"
+                >
+                  💖
+                </motion.div>
+                <motion.div
+                  animate={{ y: [0, -5, 0] }}
+                  transition={{ duration: 2, repeat: Infinity, delay: 0.4 }}
+                  className="text-2xl sm:text-3xl"
+                >
+                  🎂
+                </motion.div>
+                <motion.div
+                  animate={{ scale: [1, 1.2, 1] }}
+                  transition={{ duration: 2, repeat: Infinity, delay: 0.6 }}
+                  className="text-2xl sm:text-3xl"
+                >
+                  💖
+                </motion.div>
+                <motion.div
+                  animate={{ y: [0, -5, 0] }}
+                  transition={{ duration: 2, repeat: Infinity, delay: 0.8 }}
+                  className="text-2xl sm:text-3xl"
+                >
+                  🐱
+                </motion.div>
+              </motion.div>
+
+              {/* From pengu */}
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{
+                  delay: 1.2,
+                  duration: 0.8,
+                  ease: [0.25, 0.46, 0.45, 0.94],
+                }}
+                className="pt-4 sm:pt-5 border-t border-pink-200"
+              >
+                <motion.p
+                  animate={{ opacity: [0.7, 1, 0.7] }}
+                  transition={{
+                    duration: 3,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                  }}
+                  className="text-sm sm:text-base text-purple-500 italic"
+                >
+                   from yo lil bro pengu 🐧💜
+                </motion.p>
+              </motion.div>
             </motion.div>
           </motion.div>
         )}

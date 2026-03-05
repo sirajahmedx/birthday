@@ -103,8 +103,8 @@ export default function MemoryGame({
     setFlippedCards(newFlippedCards);
     setCards((prev) =>
       prev.map((card, idx) =>
-        idx === cardIdx ? { ...card, isFlipped: true } : card
-      )
+        idx === cardIdx ? { ...card, isFlipped: true } : card,
+      ),
     );
     if (newFlippedCards.length === 2) {
       setMoves((prev) => prev + 1);
@@ -118,8 +118,8 @@ export default function MemoryGame({
             prev.map((card, idx) =>
               idx === firstIdx || idx === secondIdx
                 ? { ...card, isMatched: true }
-                : card
-            )
+                : card,
+            ),
           );
           setMatchedPairs((prev) => prev + 1);
           setFlippedCards([]);
@@ -132,8 +132,8 @@ export default function MemoryGame({
             prev.map((card, idx) =>
               idx === firstIdx || idx === secondIdx
                 ? { ...card, isFlipped: false }
-                : card
-            )
+                : card,
+            ),
           );
           setFlippedCards([]);
           setShake(false);
@@ -159,16 +159,16 @@ export default function MemoryGame({
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1, scale: 1 }}
-      exit={{ opacity: 0, scale: 0.95 }}
-      transition={{ duration: 0.5, ease: "easeOut" }}
-      className="fixed inset-0 bg-gradient-to-br from-purple-100 to-pink-200 flex items-center justify-center p-4 z-50"
+      exit={{ opacity: 0, scale: 0.97 }}
+      transition={{ duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }}
+      className="fixed inset-0 bg-gradient-to-br from-purple-100 to-pink-200 flex items-center justify-center p-3 sm:p-4 z-50"
     >
       <motion.div
-        initial={{ scale: 0.85, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        exit={{ scale: 0.85, opacity: 0 }}
-        transition={{ duration: 0.5, ease: "easeOut" }}
-        className="bg-white rounded-3xl p-8 max-w-lg w-full shadow-2xl text-center relative overflow-hidden border-2 border-purple-200"
+        initial={{ scale: 0.9, opacity: 0, y: 20 }}
+        animate={{ scale: 1, opacity: 1, y: 0 }}
+        exit={{ scale: 0.9, opacity: 0, y: -10 }}
+        transition={{ duration: 0.5, ease: [0.34, 1.56, 0.64, 1] }}
+        className="bg-white rounded-3xl p-4 sm:p-8 max-w-lg w-full shadow-2xl text-center relative overflow-hidden border-2 border-purple-200 max-h-[95dvh] overflow-y-auto"
       >
         {/* Background gradient overlay */}
         <motion.div
@@ -186,7 +186,7 @@ export default function MemoryGame({
                 transition={{ duration: 0.5, ease: "easeOut" }}
                 className="flex justify-between items-center mb-6"
               >
-                <h2 className="text-4xl font-extrabold text-purple-900 tracking-tight drop-shadow mb-1 flex items-center gap-2">
+                <h2 className="text-2xl sm:text-4xl font-extrabold text-purple-900 tracking-tight drop-shadow mb-1 flex items-center gap-2">
                   Memory Challenge!
                   <motion.span
                     initial={{ scale: 0.7, rotate: -20 }}
@@ -265,7 +265,7 @@ export default function MemoryGame({
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: 0.5, duration: 0.5 }}
-                className={`grid gap-3 mb-6 ${shake ? "animate-shake" : ""}`}
+                className={`grid gap-2 sm:gap-3 mb-4 sm:mb-6 ${shake ? "animate-shake" : ""}`}
                 style={{
                   gridTemplateColumns: `repeat(${gridSize}, minmax(0,1fr))`,
                   maxWidth: `min(100%, ${gridSize * 70}px)`,
@@ -283,13 +283,13 @@ export default function MemoryGame({
                     }
                     tabIndex={0}
                     className={`
-                      relative w-14 h-14 sm:w-20 sm:h-20 rounded-xl cursor-pointer transform transition-all duration-200 outline-none focus:ring-2 focus:ring-purple-400
+                      relative w-12 h-12 sm:w-14 sm:h-14 md:w-20 md:h-20 rounded-xl cursor-pointer transform transition-all duration-200 outline-none focus:ring-2 focus:ring-purple-400
                       ${
                         card.isMatched
                           ? "bg-green-200 scale-110 shadow-xl border-2 border-green-400"
                           : card.isFlipped
-                          ? "bg-blue-100 border-2 border-blue-300"
-                          : "bg-gradient-to-br from-purple-200 to-pink-200 hover:scale-105 border-2 border-purple-200"
+                            ? "bg-blue-100 border-2 border-blue-300"
+                            : "bg-gradient-to-br from-purple-200 to-pink-200 hover:scale-105 border-2 border-purple-200"
                       }
                     `}
                     onClick={() => handleCardClick(card.id)}
@@ -302,7 +302,7 @@ export default function MemoryGame({
                       initial={{ opacity: 0, scale: 0.8 }}
                       animate={{ opacity: 1, scale: 1 }}
                       transition={{ duration: 0.3 }}
-                      className="absolute inset-0 flex items-center justify-center text-3xl sm:text-4xl"
+                      className="absolute inset-0 flex items-center justify-center text-2xl sm:text-3xl md:text-4xl"
                     >
                       {card.isFlipped || card.isMatched ? (
                         <motion.span
@@ -338,21 +338,25 @@ export default function MemoryGame({
             <motion.div
               initial={{ scale: 0, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
-              transition={{ duration: 0.7, ease: "easeOut" }}
+              transition={{ duration: 0.7, ease: [0.34, 1.56, 0.64, 1] }}
               className="text-center"
             >
               <motion.div
-                initial={{ y: -30, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                transition={{ duration: 0.7, ease: "easeOut" }}
+                initial={{ y: -20, opacity: 0, scale: 0.5 }}
+                animate={{ y: 0, opacity: 1, scale: 1 }}
+                transition={{ duration: 0.7, ease: [0.34, 1.56, 0.64, 1] }}
                 className="text-8xl mb-6 drop-shadow"
               >
                 🎉
               </motion.div>
               <motion.h2
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2, duration: 0.7 }}
+                initial={{ opacity: 0, y: 10, filter: "blur(6px)" }}
+                animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+                transition={{
+                  delay: 0.2,
+                  duration: 0.7,
+                  ease: [0.25, 0.46, 0.45, 0.94],
+                }}
                 className="text-5xl font-extrabold text-purple-900 mb-3 tracking-tight"
               >
                 Congratulations!
