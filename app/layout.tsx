@@ -20,8 +20,8 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: "Happy Birthday Moona 🎂",
-  description: "A special birthday surprise for Moona 💖",
+  title: "Happy Birthday Heeba aka Hala the GOAT 🎂",
+  description: "A special birthday surprise for Heeba 💖",
 };
 
 export default function RootLayout({

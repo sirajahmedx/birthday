@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Gift, Heart, Sparkles, Star, Cake, PartyPopper } from "lucide-react";
 import MemoryGame from "@/components/memory-game";
 
-const USER_NAME = "Moona";
+const USER_NAME = "Hala";
 
 type Stage =
   | "landing"
@@ -42,9 +42,9 @@ export default function BirthdaySurprise() {
 
   const typewriterTexts = [
     "Wait…",
-    "Someone has a birthday!",
+    "Okay wait. Someone has a birthday today.",
     `Happy Birthday, ${USER_NAME}!`,
-    "You're getting older 🥹",
+    "Getting older but make it iconic 🥹",
   ];
 
   const [textIndex, setTextIndex] = useState(0);
@@ -386,7 +386,7 @@ export default function BirthdaySurprise() {
               }}
               className="text-xl sm:text-2xl md:text-4xl font-bold text-center mb-8 sm:mb-12 text-purple-800 max-w-2xl px-2"
             >
-              I have a surprise for you. Click on the gift box to open it.
+              Made you a little something. Tap the gift to open it.
             </motion.h1>
 
             <motion.div
@@ -521,7 +521,7 @@ export default function BirthdaySurprise() {
               }}
               className="text-xl sm:text-2xl text-purple-700 mb-4 sm:mb-8"
             >
-              I have something for you.
+              Got something for you.
             </motion.p>
           </motion.div>
 
@@ -536,7 +536,7 @@ export default function BirthdaySurprise() {
                   onClick={handleGreetingContinue}
                   className="px-6 sm:px-8 py-3 sm:py-4 text-lg sm:text-xl rounded-2xl bg-gradient-to-r from-pink-400 to-purple-500 hover:from-pink-500 hover:to-purple-600 shadow-lg transform transition-all active:scale-95 hover:scale-105"
                 >
-                  Click to Continue
+                  Let's go
                   <Sparkles className="ml-2 w-5 h-5" />
                 </Button>
               </motion.div>
@@ -630,13 +630,13 @@ export default function BirthdaySurprise() {
                 🎀
               </motion.div>
               <h2 className="text-2xl font-bold text-purple-800 mb-6 relative z-10">
-                Click the 4 hearts.
+                Tap all 4 hearts.
               </h2>
               <Button
                 onClick={handleSurpriseContinue}
                 className="px-8 py-3 text-lg rounded-2xl bg-gradient-to-r from-pink-400 to-purple-500 hover:from-pink-500 hover:to-purple-600 shadow-lg transform transition-all hover:scale-105 relative z-10"
               >
-                Let's Go!
+                Let's go
                 <Heart className="ml-2 w-5 h-5 fill-white" />
               </Button>
             </motion.div>
@@ -658,7 +658,7 @@ export default function BirthdaySurprise() {
             transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
             className="text-2xl sm:text-3xl font-bold text-purple-800 mb-8 sm:mb-12 text-center"
           >
-            Click the 4 hearts.
+            Tap the 4 hearts.
           </motion.h1>
 
           <div className="grid grid-cols-2 gap-5 sm:gap-8">
@@ -711,7 +711,7 @@ export default function BirthdaySurprise() {
             transition={{ duration: 2, repeat: Infinity }}
           >
             <p className="text-lg text-purple-600 font-semibold">
-              {clickedHearts.length}/4 hearts clicked
+              {clickedHearts.length}/4 hearts tapped
             </p>
           </motion.div>
         </motion.div>
@@ -821,9 +821,7 @@ export default function BirthdaySurprise() {
 
               <div className="bg-gradient-to-r from-pink-100 to-purple-100 rounded-2xl p-4 sm:p-6 mb-4 sm:mb-6 relative z-10 border border-pink-200 shadow-sm">
                 <p className="text-base sm:text-lg text-purple-800 leading-relaxed">
-                  You bring so much joy and happiness to everyone around you.
-                  Your special day deserves to be celebrated with all the love
-                  in the world! 🌟
+                  You make everything around you better just by being there. People feel good when you walk in the room and that is honestly not something everyone has. Today is yours {USER_NAME}. Enjoy every second of it. 🌟
                 </p>
               </div>
 
@@ -876,7 +874,7 @@ export default function BirthdaySurprise() {
               </div>
 
               <h2 className="text-xl sm:text-2xl font-bold text-purple-800 mb-4 sm:mb-6 relative z-10">
-                {USER_NAME}, do you want a gift?
+                {USER_NAME}, want a little gift? 👀
               </h2>
 
               <div className="flex space-x-3 sm:space-x-4 relative z-10">
@@ -931,20 +929,20 @@ export default function BirthdaySurprise() {
                 <>
                   <div className="text-5xl sm:text-6xl mb-3 sm:mb-4">😹</div>
                   <h2 className="text-xl sm:text-2xl font-bold text-purple-800 mb-3 sm:mb-4">
-                    Too bad! You're getting one anyway! 🎉
+                    Too bad. You're getting one anyway. 🎉
                   </h2>
                   <p className="text-base sm:text-lg text-purple-600">
-                    You can't escape birthday surprises! 😸
+                    No one escapes birthday surprises. 😸
                   </p>
                 </>
               ) : (
                 <>
                   <div className="text-5xl sm:text-6xl mb-3 sm:mb-4">🎉</div>
                   <h2 className="text-xl sm:text-2xl font-bold text-purple-800 mb-3 sm:mb-4">
-                    Amazing! You won the memory game! 🎊
+                    You actually won! 🎊
                   </h2>
                   <p className="text-base sm:text-lg text-purple-600">
-                    Here's your well-deserved gift! 🎁
+                    Gift incoming. You earned it. 🎁
                   </p>
                 </>
               )}
@@ -997,9 +995,7 @@ export default function BirthdaySurprise() {
                   Happy Birthday, {USER_NAME}! 🎂
                 </h2>
                 <p className="text-base sm:text-lg text-purple-700 leading-relaxed">
-                  May your special day be filled with happiness, laughter, and
-                  all your favorite things. You deserve all the joy in the
-                  world! Here&apos;s to another amazing year ahead! ✨🎈
+                  Hope today is full of laughter, good food, and people who love you. You bring something real to everyone around you and days like today are just a reminder of how much you actually matter. Enjoy all of it. Every single bit. ✨🎈
                 </p>
               </motion.div>
 

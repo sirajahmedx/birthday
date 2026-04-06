@@ -214,7 +214,7 @@ export default function MemoryGame({
                 transition={{ delay: 0.2, duration: 0.5 }}
                 className="text-purple-700 mb-4 text-base font-medium"
               >
-                Find the matching pairs to get your gift,{" "}
+                Find all the pairs and your gift is yours,{" "}
                 <span className="font-bold text-purple-900">{userName}</span>!
               </motion.p>
 
@@ -359,7 +359,7 @@ export default function MemoryGame({
                 }}
                 className="text-5xl font-extrabold text-purple-900 mb-3 tracking-tight"
               >
-                Congratulations!
+                You got it! 🎉
               </motion.h2>
               <motion.p
                 initial={{ opacity: 0, y: 10 }}
@@ -367,9 +367,9 @@ export default function MemoryGame({
                 transition={{ delay: 0.3, duration: 0.7 }}
                 className="text-xl text-purple-700 mb-5 font-medium"
               >
-                You completed the memory challenge in{" "}
+                Finished in{" "}
                 <span className="font-bold text-purple-900">{moves}</span>{" "}
-                moves!
+                moves. Not bad at all.
               </motion.p>
               <motion.p
                 initial={{ opacity: 0, y: 10 }}
@@ -377,10 +377,7 @@ export default function MemoryGame({
                 transition={{ delay: 0.4, duration: 0.7 }}
                 className="text-purple-600 text-lg"
               >
-                Your gift is coming right up...{" "}
-                <span aria-label="gift" role="img">
-                  🎁
-                </span>
+                Your gift is on its way… 🎁
               </motion.p>
             </motion.div>
           )}
